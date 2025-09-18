@@ -5,26 +5,31 @@ import (
 )
 
 func isValid(s string) bool {
+	if len(s)%2 != 0 {
+		return false
+	}
 	//定义map存储括号
-	bracketMap := map[byte]byte{
+	bracketMap := map[rune]rune{
 		')': '(',
 		']': '[',
 		'}': '{',
 	}
 
 	//定义切片
-	stack := []byte{}
+	stack := []rune{}
 
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		//如果当前字符是左括号，将其压入栈中
-		if value, exists := bracketMap[c]; exists {
-			if len(stack) == 0 || stack[len(stack)-1] != value {
+	for _, char := range s {
+		// 如果是右括号
+		if matching, exists := bracketMap[char]; exists {
+			// 栈为空或栈顶元素不匹配则无效
+			if len(stack) == 0 || stack[len(stack)-1] != matching {
 				return false
 			}
+			// 匹配成功，弹出栈顶元素
 			stack = stack[:len(stack)-1]
 		} else {
-			stack = append(stack, c)
+			// 左括号入栈
+			stack = append(stack, char)
 		}
 	}
 
@@ -32,8 +37,21 @@ func isValid(s string) bool {
 }
 
 func main() {
-	testCases := []int{121, -121, 10, 0, 12321}
-	for _, num := range testCases {
-		fmt.Printf("%d is palindrome: %v\n", num, isPalindrome(num))
+	testCases := []struct {
+		input    string
+		expected bool
+	}{
+		{"()", true},
+		{"()[]{}", true},
+		{"(]", false},
+		{"([)]", false},
+		{"{[]}", true},
+		{"", true},
+		{"(", false},
+	}
+
+	for _, tc := range testCases {
+		result := isValid(tc.input)
+		fmt.Printf("Input: %q, Expected: %v, Got: %v\n", tc.input, tc.expected, result)
 	}
 }
