@@ -4,54 +4,30 @@ import (
 	"fmt"
 )
 
-func isValid(s string) bool {
-	if len(s)%2 != 0 {
-		return false
+func removeDuplicates(nums []int) int {
+	if len(nums) == 0 {
+		return 0
 	}
-	//定义map存储括号
-	bracketMap := map[rune]rune{
-		')': '(',
-		']': '[',
-		'}': '{',
-	}
-
-	//定义切片
-	stack := []rune{}
-
-	for _, char := range s {
-		// 如果是右括号
-		if matching, exists := bracketMap[char]; exists {
-			// 栈为空或栈顶元素不匹配则无效
-			if len(stack) == 0 || stack[len(stack)-1] != matching {
-				return false
-			}
-			// 匹配成功，弹出栈顶元素
-			stack = stack[:len(stack)-1]
-		} else {
-			// 左括号入栈
-			stack = append(stack, char)
+	i := 0                           // 慢指针，标记唯一元素位置
+	for j := 1; j < len(nums); j++ { // 快指针遍历数组
+		if nums[j] != nums[i] {
+			i++
+			nums[i] = nums[j] // 将新元素覆盖到唯一区
 		}
 	}
-
-	return len(stack) == 0
+	return i + 1 // 新数组长度
 }
 
 func main() {
-	testCases := []struct {
-		input    string
-		expected bool
-	}{
-		{"()", true},
-		{"()[]{}", true},
-		{"(]", false},
-		{"([)]", false},
-		{"{[]}", true},
-		{"", true},
-		{"(", false},
+	testCases := [][]int{
+		{1, 1, 2},
+		{0, 0, 1, 1, 1, 2, 2, 3, 3, 4},
+		{},
+		{5},
 	}
 
-	for _, tc := range testCases {
-		result := isValid(tc.input)
-		fmt.Printf("Input: %q, Expected: %v, Got: %v\n", tc.input, tc.expected, result)
+	for _, nums := range testCases {
+		k := removeDuplicates(nums)
+		fmt.Printf("Input: %v → Output: %v (Length: %d)\n", nums, nums[:k], k)
 	}
 }
