@@ -4,54 +4,39 @@ import (
 	"fmt"
 )
 
-func isValid(s string) bool {
-	if len(s)%2 != 0 {
-		return false
-	}
-	//定义map存储括号
-	bracketMap := map[rune]rune{
-		')': '(',
-		']': '[',
-		'}': '{',
-	}
-
-	//定义切片
-	stack := []rune{}
-
-	for _, char := range s {
-		// 如果是右括号
-		if matching, exists := bracketMap[char]; exists {
-			// 栈为空或栈顶元素不匹配则无效
-			if len(stack) == 0 || stack[len(stack)-1] != matching {
-				return false
-			}
-			// 匹配成功，弹出栈顶元素
-			stack = stack[:len(stack)-1]
-		} else {
-			// 左括号入栈
-			stack = append(stack, char)
+func plusOne(digits []int) []int {
+	// 从末位开始遍历
+	for i := len(digits) - 1; i >= 0; i-- {
+		if digits[i] < 9 { // 优化：提前判断是否需要进位
+			digits[i]++
+			return digits
 		}
+		digits[i] = 0 // 进位后置零
 	}
 
-	return len(stack) == 0
+	// 如果所有位都是9（如[9,9,9]），需要扩展数组
+	return append([]int{1}, digits...)
 }
 
 func main() {
-	testCases := []struct {
-		input    string
-		expected bool
-	}{
-		{"()", true},
-		{"()[]{}", true},
-		{"(]", false},
-		{"([)]", false},
-		{"{[]}", true},
-		{"", true},
-		{"(", false},
+	// 测试案例
+	testCases := [][]int{
+		{1, 2, 3},
+		{4, 3, 2, 1},
+		{9},
+		{9, 9, 9},
+		{0},
+		{2, 0, 9},
+		{1, 9, 9},
 	}
 
+	// 执行测试
 	for _, tc := range testCases {
-		result := isValid(tc.input)
-		fmt.Printf("Input: %q, Expected: %v, Got: %v\n", tc.input, tc.expected, result)
+		// 复制输入以避免修改原数组
+		input := make([]int, len(tc))
+		copy(input, tc)
+
+		result := plusOne(tc)
+		fmt.Printf("输入: %v, 结果: %v\n", input, result)
 	}
 }
