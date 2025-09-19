@@ -4,54 +4,33 @@ import (
 	"fmt"
 )
 
-func isValid(s string) bool {
-	if len(s)%2 != 0 {
-		return false
-	}
-	//定义map存储括号
-	bracketMap := map[rune]rune{
-		')': '(',
-		']': '[',
-		'}': '{',
-	}
-
-	//定义切片
-	stack := []rune{}
-
-	for _, char := range s {
-		// 如果是右括号
-		if matching, exists := bracketMap[char]; exists {
-			// 栈为空或栈顶元素不匹配则无效
-			if len(stack) == 0 || stack[len(stack)-1] != matching {
-				return false
-			}
-			// 匹配成功，弹出栈顶元素
-			stack = stack[:len(stack)-1]
-		} else {
-			// 左括号入栈
-			stack = append(stack, char)
+func twoSum(nums []int, target int) []int {
+	numMap := make(map[int]int) // 哈希表存储数值到索引的映射
+	for i, num := range nums {
+		complement := target - num // 计算补数
+		if j, exists := numMap[complement]; exists {
+			return []int{j, i} // 找到解立即返回
 		}
+		numMap[num] = i // 存储当前数值和索引
 	}
-
-	return len(stack) == 0
+	return nil // 无解时返回nil（根据题意可改为抛出异常）
 }
 
 func main() {
 	testCases := []struct {
-		input    string
-		expected bool
+		nums   []int
+		target int
+		expect []int
 	}{
-		{"()", true},
-		{"()[]{}", true},
-		{"(]", false},
-		{"([)]", false},
-		{"{[]}", true},
-		{"", true},
-		{"(", false},
+		{[]int{2, 7, 11, 15}, 9, []int{0, 1}},
+		{[]int{3, 2, 4}, 6, []int{1, 2}},
+		{[]int{3, 3}, 6, []int{0, 1}},
+		{[]int{1, 2, 3, 4}, 10, nil},
 	}
 
 	for _, tc := range testCases {
-		result := isValid(tc.input)
-		fmt.Printf("Input: %q, Expected: %v, Got: %v\n", tc.input, tc.expected, result)
+		result := twoSum(tc.nums, tc.target)
+		fmt.Printf("Input: %v Target: %d → Output: %v (Expected: %v)\n",
+			tc.nums, tc.target, result, tc.expect)
 	}
 }
